@@ -38,11 +38,16 @@ class VkWallClear extends Command
 
         $client = new VKApiClient();
         $removedCount = 0;
+        $progressStarted = false;
         do {
             $posts = $client->wall()->get($this->config['vk_token'], [
                 'owner_id' => $this->config['vk_owner'],
                 'count' => 100
             ]);
+
+            if (!$progressStarted) {
+                $io->progressStart((int) $posts['response']['count']);
+            }
 
             foreach (($posts['response']['items'] ?? []) as $item) {
                 $client->wall()->delete($this->config['vk_token'], [
@@ -52,8 +57,10 @@ class VkWallClear extends Command
 
                 ++$removedCount;
                 sleep(0.3);
+                $io->progressAdvance();
             }
         } while (($posts['response']['count'] ?? 0) > 0);
+        $io->progressFinish();
 
         $io->success(\sprintf('Total removed posts on wal is %d', $removedCount));
         return 0;
