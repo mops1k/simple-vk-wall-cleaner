@@ -46,7 +46,7 @@ class VkWallClear extends Command
             ]);
 
             if (!$progressStarted) {
-                $io->progressStart((int) $posts['response']['count']);
+                $io->progressStart((int) ($posts['response']['count'] ?? 0));
             }
 
             foreach (($posts['response']['items'] ?? []) as $item) {
