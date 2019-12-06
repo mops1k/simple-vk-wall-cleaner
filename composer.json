@@ -1,0 +1,15 @@
+{
+    "name": "mops1k/console_apps",
+    "type": "project",
+    "require": {
+        "symfony/console": "^5.0",
+        "vkcom/vk-php-sdk": "^5.101",
+        "symfony/yaml": "^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Command\\": "src/"
+        }
+    },
+    "license": "GPL"
+}

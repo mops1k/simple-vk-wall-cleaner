@@ -1,0 +1,16 @@
+#!/usr/bin/php
+<?php
+declare(strict_types=1);
+
+require_once __DIR__.'/vendor/autoload.php';
+
+use Command\VkWallClear;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Yaml\Yaml;
+
+$config = Yaml::parseFile(__DIR__.'/config.yaml');
+$application = new Application('Console apps', '1.0');
+
+$application->add(new VkWallClear(null, $config));
+
+$application->run();
