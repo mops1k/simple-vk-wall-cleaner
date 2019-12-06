@@ -21,9 +21,12 @@ class VkWallClear extends Command
         $this->config = $config;
     }
 
-    protected function configure()
+    /**
+     * {@inheritDoc}
+     */
+    protected function configure(): void
     {
-        $this->setDescription('Delete all posts on vkontakte wall');
+        $this->setDescription('Delete all posts on vk.com wall');
     }
 
     /**
@@ -39,6 +42,8 @@ class VkWallClear extends Command
         $client = new VKApiClient();
         $removedCount = 0;
         $progressStarted = false;
+
+        $io->comment('Fetching and deleting posts');
         do {
             $posts = $client->wall()->get($this->config['vk_token'], [
                 'owner_id' => $this->config['vk_owner'],
@@ -46,10 +51,11 @@ class VkWallClear extends Command
             ]);
 
             if (!$progressStarted) {
-                $io->progressStart((int) ($posts['response']['count'] ?? 0));
+                $io->progressStart((int) ($posts['count'] ?? 0));
+                $progressStarted = true;
             }
 
-            foreach (($posts['response']['items'] ?? []) as $item) {
+            foreach (($posts['items'] ?? []) as $item) {
                 $client->wall()->delete($this->config['vk_token'], [
                     'owner_id' => $this->config['vk_owner'],
                     'post_id'  => $item['id']
@@ -57,9 +63,10 @@ class VkWallClear extends Command
 
                 ++$removedCount;
                 sleep(0.3);
+
                 $io->progressAdvance();
             }
-        } while (($posts['response']['count'] ?? 0) > 0);
+        } while (($posts['count'] ?? 0) > 0);
         $io->progressFinish();
 
         $io->success(\sprintf('Total removed posts on wal is %d', $removedCount));
